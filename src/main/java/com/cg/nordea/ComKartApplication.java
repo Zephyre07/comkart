@@ -13,11 +13,9 @@ public class ComKartApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ComKartApplication.class, args);
 	}
-	
 
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
-
 }
