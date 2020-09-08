@@ -26,16 +26,16 @@ public class CertCatergoryDetails {
 	@Column(name = "CERT_NAME")
 	private String certName;
 
-	@Column(name = "CreatedBy")
+	@Column(name = "Created_By")
 	private String createdBY;
 	
-	@Column(name = "UpdatedBy")
+	@Column(name = "Updated_By")
 	private String updatedBY;
 
-	@Column(name = "CreatedDate")
+	@Column(name = "Created_Date")
 	private Date createdDate;
 
-	@Column(name = "UpdatedDate")
+	@Column(name = "Updated_Date")
 	private Date updatedDate;
 
 

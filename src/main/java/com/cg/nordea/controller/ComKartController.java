@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.nordea.dto.CertResourceDetails;
 import com.cg.nordea.entities.Currency;
 import com.cg.nordea.entities.ResourceDetails;
 import com.cg.nordea.exceptions.NoDataFoundException;
@@ -31,6 +32,13 @@ public class ComKartController {
 	@GetMapping(value = "/resource/{empId}")
 	public ResponseEntity<ResourceDetails> getResourceDetails(@PathVariable String empId) throws NoDataFoundException {
 		return new ResponseEntity<>(comKartServiceImpl.getResource(empId), HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/certificate/{empId}")
+	public ResponseEntity<CertResourceDetails> getCertificateDetails(@PathVariable String empId)
+			throws NoDataFoundException {
+		CertResourceDetails details = comKartServiceImpl.getCertificates(empId);
+		return new ResponseEntity<>(details, HttpStatus.OK);
 	}
 
 }
