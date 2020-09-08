@@ -108,7 +108,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>3.2.1</version>
 				<configuration>
-					<outputDirectory>C:\installer\apache-tomcat-9.0.34\webapps\
+					<outputDirectory>C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps
 					</outputDirectory>
 					<!-- Example of Tomcat webapps location :D:\tomcat\webapps\ -->
 				</configuration>
