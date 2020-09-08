@@ -1,5 +1,6 @@
 package com.cg.nordea.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.cg.nordea.dto.CertCategoryDetailsDto;
 import com.cg.nordea.dto.CertResourceDetails;
+import com.cg.nordea.dto.CertResourceMappingDto;
 import com.cg.nordea.dto.CertificationDetailsDto;
 import com.cg.nordea.entities.CertCatergoryDetails;
 import com.cg.nordea.entities.CertificationDetailsOfResource;
@@ -123,6 +125,31 @@ public class ComKartServiceImpl implements ComKartService {
 		return certDetailsDto;
 		
 
+	}
+	
+	@Override
+	public void saveCertResourceMapping(CertResourceMappingDto certResourceMappingDto) throws Exception{
+		
+		CertificationDetailsOfResource certificationDetailsOfResource  = loadCertificationDetailsOfResource(certResourceMappingDto);
+		certificationDetailsOfResourceRepository.save(certificationDetailsOfResource);
+	}
+	
+	private CertificationDetailsOfResource loadCertificationDetailsOfResource(CertResourceMappingDto certResourceMappingDto) {
+		
+		CertificationDetailsOfResource certificationDetailsOfResource  = new CertificationDetailsOfResource();
+		
+		certificationDetailsOfResource.setCertCategoryId(certResourceMappingDto.getCertCategoryId());
+		certificationDetailsOfResource.setEmployeeID(certResourceMappingDto.getEmployeeID());
+		certificationDetailsOfResource.setCertificationDate(certResourceMappingDto.getCertificationDate());
+		certificationDetailsOfResource.setValidFromDate(certResourceMappingDto.getValidFromDate());
+		certificationDetailsOfResource.setValidToDate(certResourceMappingDto.getValidToDate());
+		certificationDetailsOfResource.setCreatedBY(certResourceMappingDto.getCreatedBY());
+		
+		Date now = new Date();
+		certificationDetailsOfResource.setCreatedDate(now);
+		certificationDetailsOfResource.setUpdatedDate(now);
+		
+		return certificationDetailsOfResource;
 	}
 	
 }

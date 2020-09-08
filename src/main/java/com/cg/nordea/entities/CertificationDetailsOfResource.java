@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -16,6 +18,7 @@ import lombok.Data;
 public class CertificationDetailsOfResource {
 	@Id
 	@Column(name = "RESOURCE_CERTIFICATE_ID")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Long resourceCertId;
 
 	@Column(name = "CERTIFICATE_ID")

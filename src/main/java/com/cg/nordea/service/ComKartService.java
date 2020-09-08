@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cg.nordea.dto.CertCategoryDetailsDto;
 import com.cg.nordea.dto.CertResourceDetails;
+import com.cg.nordea.dto.CertResourceMappingDto;
 import com.cg.nordea.entities.Currency;
 import com.cg.nordea.entities.ResourceDetails;
 import com.cg.nordea.exceptions.NoDataFoundException;
@@ -17,4 +18,6 @@ public interface ComKartService {
 	public CertResourceDetails getCertificates(String employeeID) throws NoDataFoundException;
 
 	public List<CertCategoryDetailsDto> getCertCategoryDetails() throws NoDataFoundException;
+
+	void saveCertResourceMapping(CertResourceMappingDto certResourceMappingDto) throws Exception;
 }
