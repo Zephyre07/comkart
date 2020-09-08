@@ -45,28 +45,19 @@ public class ComKartController {
 		CertResourceDetails details = comKartServiceImpl.getCertificates(empId);
 		return new ResponseEntity<>(details, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/certification")
-	public ResponseEntity<List<CertCategoryDetailsDto>> getCertCategoryDetails() 
-			throws NoDataFoundException {
+	public ResponseEntity<List<CertCategoryDetailsDto>> getCertCategoryDetails() throws NoDataFoundException {
 		List<CertCategoryDetailsDto> certCategoryDetails = comKartServiceImpl.getCertCategoryDetails();
 		return new ResponseEntity<>(certCategoryDetails, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/certificate/save")
-	public ResponseEntity<ResponseDTO> postJson(@RequestBody CertResourceMappingDto certResourceMappingDto) {
-		
-		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setMessage("Certificate Successfuly saved");
-		
-	    try {
-	    	certResourceMappingDto.setCreatedBY("88063_FS");//TO-DO -> will be login user id
-	    	comKartServiceImpl.saveCertResourceMapping(certResourceMappingDto);
-	    } catch(Exception e) {
-	    	responseDTO.setMessage("Error occurred while saving Certificate");
-	    }
+	public ResponseEntity<ResponseDTO> postJson(@RequestBody CertResourceMappingDto certResourceMappingDto) throws Exception {
+		certResourceMappingDto.setCreatedBY("88063_FS");// TO-DO -> will be login user id
+		ResponseDTO responseDTO = comKartServiceImpl.saveCertResourceMapping(certResourceMappingDto);
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-		
+
 	}
 
 }

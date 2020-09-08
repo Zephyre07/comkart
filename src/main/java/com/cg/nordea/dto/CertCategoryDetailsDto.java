@@ -11,6 +11,6 @@ public class CertCategoryDetailsDto {
 	
 	String provider;
 	
-	String certificateName;
+	String certName;
 	
 }

@@ -1,6 +1,6 @@
 package com.cg.nordea.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,15 +28,14 @@ public class CertCatergoryDetails {
 
 	@Column(name = "Created_By")
 	private String createdBY;
-	
+
 	@Column(name = "Updated_By")
 	private String updatedBY;
 
-	@Column(name = "Created_Date")
-	private Date createdDate;
+	@Column(name = "Created_Date", columnDefinition = "TIMESTAMP")
+	private LocalDateTime createdDate;
 
-	@Column(name = "Updated_Date")
-	private Date updatedDate;
-
+	@Column(name = "Updated_Date", columnDefinition = "TIMESTAMP")
+	private LocalDateTime updatedDate;
 
 }

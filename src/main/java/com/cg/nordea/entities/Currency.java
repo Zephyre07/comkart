@@ -1,6 +1,6 @@
 package com.cg.nordea.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,17 +19,17 @@ public class Currency {
 
 	@Column(name = "NAME")
 	private String name;
-	
+
 	@Column(name = "CREATEDBY")
 	private String createdBY;
-	
+
 	@Column(name = "UPDATEDBY")
 	private String updatedBY;
 
-	@Column(name = "CREATEDDATE")
-	private Date createdDate;
+	@Column(name = "CREATEDDATE", columnDefinition = "TIMESTAMP")
+	private LocalDateTime createdDate;
 
-	@Column(name = "UPDATEDDATE")
-	private Date updatedDate;
+	@Column(name = "UPDATEDDATE", columnDefinition = "TIMESTAMP")
+	private LocalDateTime updatedDate;
 
 }

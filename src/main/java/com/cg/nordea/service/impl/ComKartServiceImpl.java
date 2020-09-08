@@ -1,8 +1,10 @@
 package com.cg.nordea.service.impl;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import com.cg.nordea.dto.CertCategoryDetailsDto;
 import com.cg.nordea.dto.CertResourceDetails;
 import com.cg.nordea.dto.CertResourceMappingDto;
 import com.cg.nordea.dto.CertificationDetailsDto;
+import com.cg.nordea.dto.ResponseDTO;
 import com.cg.nordea.entities.CertCatergoryDetails;
 import com.cg.nordea.entities.CertificationDetailsOfResource;
 import com.cg.nordea.entities.Currency;
@@ -63,8 +66,7 @@ public class ComKartServiceImpl implements ComKartService {
 		List<CertificationDetailsOfResource> certList = certificationDetailsOfResourceRepository
 				.findByEmployeeID(employeeID)
 				.orElseThrow(() -> new NoDataFoundException("Certificate details not available for " + employeeID));
-		
-		
+
 		List<CertificationDetailsDto> certDetailDtoList = certList.stream().map(certDetails -> {
 			try {
 				return loadCertificationData(certDetails);
@@ -73,83 +75,72 @@ public class ComKartServiceImpl implements ComKartService {
 			}
 			return null;
 		}).collect(Collectors.toList());
-		
+
 		certResourceDetails.setCertificationList(certDetailDtoList);
 		certResourceDetails.setResponseCode("200");
 		certResourceDetails.setResponseMessage("Success");
 		return certResourceDetails;
 	}
 
-	public CertificationDetailsDto loadCertificationData(CertificationDetailsOfResource certDetail) throws NoDataFoundException {
+	public CertificationDetailsDto loadCertificationData(CertificationDetailsOfResource certDetail)
+			throws NoDataFoundException {
 		CertificationDetailsDto certDetailsDto = new CertificationDetailsDto();
 		CertCatergoryDetails categoryDetails = certCatergoryDetailsRepository.findById(certDetail.getCertCategoryId())
-				.orElseThrow(() -> new NoDataFoundException("Certificate details not available for " + certDetail.getEmployeeID()));
-		
+				.orElseThrow(() -> new NoDataFoundException(
+						"Certificate details not available for " + certDetail.getEmployeeID()));
+
 		certDetailsDto.setProvider(categoryDetails.getCertProvider());
 		certDetailsDto.setTechName(categoryDetails.getTechName());
 		certDetailsDto.setCertificateName(categoryDetails.getCertName());
 		certDetailsDto.setCertificationDate(certDetail.getCertificationDate());
 		certDetailsDto.setValidFrom(certDetail.getValidFromDate());
 		certDetailsDto.setValidTo(certDetail.getValidToDate());
-		
+
 		return certDetailsDto;
-		
 
 	}
-	
+
 	@Override
 	public List<CertCategoryDetailsDto> getCertCategoryDetails() throws NoDataFoundException {
-		
-		List<CertCatergoryDetails> categoryDetails = (List<CertCatergoryDetails>) certCatergoryDetailsRepository.findAll();
-		
-		List<CertCategoryDetailsDto> certDetailDtoList = categoryDetails.stream().map(categoryDetail -> {
-			try {
-				return loadCertCategoryData(categoryDetail);
-			} catch (NoDataFoundException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}).collect(Collectors.toList());
-		
+
+		List<CertCatergoryDetails> categoryDetails = (List<CertCatergoryDetails>) 
+				certCatergoryDetailsRepository.findAll();
+
+		List<CertCategoryDetailsDto> certDetailDtoList = categoryDetails.stream()
+				.map(categoryDetail -> 
+					modelMapper.map(categoryDetail, CertCategoryDetailsDto.class)
+		).collect(Collectors.toList());
+
 		return certDetailDtoList;
 	}
-	
-	public CertCategoryDetailsDto loadCertCategoryData(CertCatergoryDetails categoryDetails) throws NoDataFoundException {
-		CertCategoryDetailsDto certDetailsDto = new CertCategoryDetailsDto();
-				
-		certDetailsDto.setCertCategoryId(categoryDetails.getCertCategoryId());
-		certDetailsDto.setProvider(categoryDetails.getCertProvider());
-		certDetailsDto.setTechName(categoryDetails.getTechName());
-		certDetailsDto.setCertificateName(categoryDetails.getCertName());
-		
-		return certDetailsDto;
-		
+
+
+	@Override
+	@Transactional
+	public ResponseDTO saveCertResourceMapping(CertResourceMappingDto certResourceMappingDto) throws Exception {
+		ResponseDTO responseDTO = new ResponseDTO();
+		try {
+			CertificationDetailsOfResource certificationDetailsOfResource = loadCertificationDetailsOfResource(
+					certResourceMappingDto);
+			certificationDetailsOfResourceRepository.save(certificationDetailsOfResource);
+			responseDTO.setMessage("Certificate Successfuly saved");
+			responseDTO.setCode(200);
+		} catch (Exception e) {
+			responseDTO.setMessage("Error in saving Certificate Details");
+			responseDTO.setCode(500);
+		}
+		return responseDTO;
 
 	}
-	
-	@Override
-	public void saveCertResourceMapping(CertResourceMappingDto certResourceMappingDto) throws Exception{
-		
-		CertificationDetailsOfResource certificationDetailsOfResource  = loadCertificationDetailsOfResource(certResourceMappingDto);
-		certificationDetailsOfResourceRepository.save(certificationDetailsOfResource);
-	}
-	
-	private CertificationDetailsOfResource loadCertificationDetailsOfResource(CertResourceMappingDto certResourceMappingDto) {
-		
-		CertificationDetailsOfResource certificationDetailsOfResource  = new CertificationDetailsOfResource();
-		
-		certificationDetailsOfResource.setCertCategoryId(certResourceMappingDto.getCertCategoryId());
-		certificationDetailsOfResource.setEmployeeID(certResourceMappingDto.getEmployeeID());
-		certificationDetailsOfResource.setCertificationDate(certResourceMappingDto.getCertificationDate());
-		certificationDetailsOfResource.setValidFromDate(certResourceMappingDto.getValidFromDate());
-		certificationDetailsOfResource.setValidToDate(certResourceMappingDto.getValidToDate());
-		certificationDetailsOfResource.setCreatedBY(certResourceMappingDto.getCreatedBY());
-		
-		Date now = new Date();
+
+	private CertificationDetailsOfResource loadCertificationDetailsOfResource(
+			CertResourceMappingDto certResourceMappingDto) {
+		CertificationDetailsOfResource certificationDetailsOfResource = modelMapper.map(certResourceMappingDto, CertificationDetailsOfResource.class);
+		LocalDateTime now = LocalDateTime.now();
 		certificationDetailsOfResource.setCreatedDate(now);
 		certificationDetailsOfResource.setUpdatedDate(now);
-		
+		certificationDetailsOfResource.setResourceCertId(null);
 		return certificationDetailsOfResource;
 	}
-	
+
 }

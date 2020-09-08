@@ -1,6 +1,6 @@
 package com.cg.nordea.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,32 +25,29 @@ public class ResourceDetails {
 
 	@Column(name = "Emp_Status")
 	private String empStatus;
-	
+
 	@Column(name = "Mobile_Number")
 	private String mobileNumber;
-	
+
 	@Column(name = "Capgemini_E_Mail_Id")
 	private String capgeminiEmailId;
-	
+
 	@Column(name = "Nordea_E_Mail_Id")
 	private String nordeaEmailId;
-	
+
 	@Column(name = "GGID")
 	private String ggId;
 
-	
-	
 	@Column(name = "CreatedBy")
 	private String createdBY;
-	
+
 	@Column(name = "UpdatedBy")
 	private String updatedBY;
 
-	@Column(name = "CreatedDate")
-	private Date createdDate;
+	@Column(name = "CreatedDate", columnDefinition = "TIMESTAMP")
+	private LocalDateTime createdDate;
 
-	@Column(name = "UpdatedDate")
-	private Date updatedDate;
-
+	@Column(name = "UpdatedDate", columnDefinition = "TIMESTAMP")
+	private LocalDateTime updatedDate;
 
 }

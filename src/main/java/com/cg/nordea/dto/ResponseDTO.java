@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 
+@SuppressWarnings("serial")
 @Data
 public class ResponseDTO implements Serializable {
 	
