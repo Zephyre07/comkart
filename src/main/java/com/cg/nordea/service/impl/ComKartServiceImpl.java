@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cg.nordea.dto.CertCategoryDetailsDto;
 import com.cg.nordea.dto.CertResourceDetails;
 import com.cg.nordea.dto.CertificationDetailsDto;
 import com.cg.nordea.entities.CertCatergoryDetails;
@@ -93,4 +94,35 @@ public class ComKartServiceImpl implements ComKartService {
 		
 
 	}
+	
+	@Override
+	public List<CertCategoryDetailsDto> getCertCategoryDetails() throws NoDataFoundException {
+		
+		List<CertCatergoryDetails> categoryDetails = (List<CertCatergoryDetails>) certCatergoryDetailsRepository.findAll();
+		
+		List<CertCategoryDetailsDto> certDetailDtoList = categoryDetails.stream().map(categoryDetail -> {
+			try {
+				return loadCertCategoryData(categoryDetail);
+			} catch (NoDataFoundException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}).collect(Collectors.toList());
+		
+		return certDetailDtoList;
+	}
+	
+	public CertCategoryDetailsDto loadCertCategoryData(CertCatergoryDetails categoryDetails) throws NoDataFoundException {
+		CertCategoryDetailsDto certDetailsDto = new CertCategoryDetailsDto();
+				
+		certDetailsDto.setCertCategoryId(categoryDetails.getCertCategoryId());
+		certDetailsDto.setProvider(categoryDetails.getCertProvider());
+		certDetailsDto.setTechName(categoryDetails.getTechName());
+		certDetailsDto.setCertificateName(categoryDetails.getCertName());
+		
+		return certDetailsDto;
+		
+
+	}
+	
 }

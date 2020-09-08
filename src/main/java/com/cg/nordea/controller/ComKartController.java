@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cg.nordea.dto.CertCategoryDetailsDto;
 import com.cg.nordea.dto.CertResourceDetails;
 import com.cg.nordea.entities.Currency;
 import com.cg.nordea.entities.ResourceDetails;
@@ -39,6 +40,13 @@ public class ComKartController {
 			throws NoDataFoundException {
 		CertResourceDetails details = comKartServiceImpl.getCertificates(empId);
 		return new ResponseEntity<>(details, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/certification")
+	public ResponseEntity<List<CertCategoryDetailsDto>> getCertCategoryDetails() 
+			throws NoDataFoundException {
+		List<CertCategoryDetailsDto> certCategoryDetails = comKartServiceImpl.getCertCategoryDetails();
+		return new ResponseEntity<>(certCategoryDetails, HttpStatus.OK);
 	}
 
 }
