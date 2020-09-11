@@ -1,5 +1,6 @@
 package com.cg.nordea.service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import com.cg.nordea.dto.CertCategoryDetailsDto;
@@ -21,4 +22,6 @@ public interface ComKartService {
 	public List<CertCategoryDetailsDto> getCertCategoryDetails() throws NoDataFoundException;
 
 	public ResponseDTO saveCertResourceMapping(CertResourceMappingDto certResourceMappingDto) throws Exception;
+
+	public ByteArrayOutputStream getExcelResourceCertificates() throws Exception;
 }

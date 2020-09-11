@@ -1,9 +1,13 @@
 package com.cg.nordea.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,5 +63,19 @@ public class ComKartController {
 		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 
 	}
+	
+	@GetMapping(value = "/certificate/download")
+    public ResponseEntity<ByteArrayResource> downloadCertificateDetais() throws Exception {
+        try {
+            ByteArrayOutputStream stream = comKartServiceImpl.getExcelResourceCertificates();
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(new MediaType("application", "force-download"));
+            header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Certificates.xlsx");
+            return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()),
+                    header, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

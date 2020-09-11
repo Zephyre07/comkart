@@ -1,11 +1,23 @@
 package com.cg.nordea.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -141,6 +153,154 @@ public class ComKartServiceImpl implements ComKartService {
 		certificationDetailsOfResource.setUpdatedDate(now);
 		certificationDetailsOfResource.setResourceCertId(null);
 		return certificationDetailsOfResource;
+	}
+
+	@Override
+	public ByteArrayOutputStream getExcelResourceCertificates() throws Exception {
+
+		List<String> empIds = certificationDetailsOfResourceRepository.findCertEmpId().get();
+
+		List<CertResourceDetails> lstCertResourceDetails = new ArrayList<>();
+
+		empIds.forEach(empId -> {
+			try {
+				lstCertResourceDetails.add(getCertificates(empId));
+			} catch (NoDataFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		XSSFWorkbook workbook = formatExcelData(lstCertResourceDetails); // creates the workbook
+		workbook.write(stream);
+		workbook.close();
+
+		return stream;
+	}
+
+	private XSSFWorkbook formatExcelData(List<CertResourceDetails> lstCertResourceDetails) {
+
+		XSSFWorkbook workbook = new XSSFWorkbook();
+
+		Sheet sheet = workbook.createSheet("Certificates");
+
+		createHeader(workbook, sheet);
+		addData(workbook, sheet, lstCertResourceDetails);
+
+		return workbook;
+	}
+
+	private void createHeader(XSSFWorkbook workbook, Sheet sheet) {
+		Row header = sheet.createRow(0);
+
+		CellStyle headerStyle = workbook.createCellStyle();
+		headerStyle.setFillForegroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
+		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		headerStyle.setBorderTop(BorderStyle.MEDIUM);
+		headerStyle.setBorderBottom(BorderStyle.MEDIUM);
+		headerStyle.setBorderLeft(BorderStyle.MEDIUM);
+		headerStyle.setBorderRight(BorderStyle.MEDIUM);
+
+		XSSFFont font = workbook.createFont();
+		font.setFontName("Arial");
+		font.setFontHeightInPoints((short) 10);
+		font.setBold(true);
+		headerStyle.setFont(font);
+
+		int headerCellNumber = 0;
+		List<String> lstHeader = new ArrayList<>();
+
+		lstHeader.add("Resource Name");
+		lstHeader.add("Certificate Name");
+		lstHeader.add("Technology Name");
+		lstHeader.add("Certificate Provider");
+		lstHeader.add("Certification Date");
+		lstHeader.add("Certificate Valid From");
+		lstHeader.add("Certificate Valid To");
+
+		Cell headerCell = null;
+		for (String strHeader : lstHeader) {
+			headerCell = header.createCell(headerCellNumber);
+			headerCell.setCellValue(strHeader);
+			headerCell.setCellStyle(headerStyle);
+			sheet.autoSizeColumn(headerCellNumber);
+			headerCellNumber++;
+		}
+	}
+
+	private void addData(XSSFWorkbook workbook, Sheet sheet, List<CertResourceDetails> lstCertResourceDetails) {
+
+		int rowNum = 1;
+		for (CertResourceDetails certResourceDetails : lstCertResourceDetails) {
+			for (CertificationDetailsDto ceartficate : certResourceDetails.getCertificationList()) {
+
+				int cellNumber = 0;
+				Row header = sheet.createRow(rowNum);
+
+				CellStyle dataStyle = workbook.createCellStyle();
+				dataStyle.setWrapText(true);
+				dataStyle.setBorderTop(BorderStyle.MEDIUM);
+				dataStyle.setBorderBottom(BorderStyle.MEDIUM);
+				dataStyle.setBorderLeft(BorderStyle.MEDIUM);
+				dataStyle.setBorderRight(BorderStyle.MEDIUM);
+
+				XSSFFont font = workbook.createFont();
+				font.setFontName("Arial");
+				font.setFontHeightInPoints((short) 8);
+				font.setBold(true);
+				dataStyle.setFont(font);
+
+				// Resource Name
+				Cell headerCell = header.createCell(cellNumber);
+				headerCell.setCellValue(certResourceDetails.getEmployeeName());
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+				
+				// Certificate Name
+				headerCell = header.createCell(cellNumber);
+				headerCell.setCellValue(ceartficate.getCertificateName());
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+
+				// Technology Name
+				headerCell = header.createCell(cellNumber);
+				headerCell.setCellValue(ceartficate.getTechName());
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+
+				// Certificate Provider
+				headerCell = header.createCell(cellNumber);
+				headerCell.setCellValue(ceartficate.getProvider());
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+
+				// CErtification Date
+				headerCell = header.createCell(cellNumber);
+				headerCell.setCellValue(ceartficate.getCertificationDate().format(DateTimeFormatter.ISO_LOCAL_DATE));
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+
+				// Certificate Valid From Date
+				headerCell = header.createCell(cellNumber);
+				if (null != ceartficate.getValidFrom()) {
+					headerCell.setCellValue(ceartficate.getValidFrom().format(DateTimeFormatter.ISO_LOCAL_DATE));
+				}
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+
+				// Certificate Valid To Date
+				headerCell = header.createCell(cellNumber);
+				if (null != ceartficate.getValidTo()) {
+					headerCell.setCellValue(ceartficate.getValidTo().format(DateTimeFormatter.ISO_LOCAL_DATE));
+				}
+				headerCell.setCellStyle(dataStyle);
+				cellNumber++;
+
+				rowNum++;
+			}
+		}
+
 	}
 
 }
